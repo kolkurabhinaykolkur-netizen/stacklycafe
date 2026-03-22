@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stackly Security | Register</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI, sans-serif;
+}
+
+body{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#0b0f2a;
+padding:20px;
+}
+
+/* CONTAINER */
+.container{
+background:#111633;
+width:100%;
+max-width:420px;
+padding:35px;
+border-radius:14px;
+box-shadow:0 0 25px rgba(0,140,255,0.3);
+color:white;
+}
+
+/* LOGO */
+.logo{
+text-align:center;
+margin-bottom:15px;
+}
+
+.logo img{
+width:110px;
+}
+
+/* TITLE */
+h2{
+text-align:center;
+margin-bottom:25px;
+color:#00c6ff;
+}
+
+/* LABEL */
+label{
+font-weight:600;
+font-size:14px;
+display:block;
+margin-bottom:6px;
+color:#ccc;
+}
+
+/* INPUT */
+input,select{
+width:100%;
+padding:12px;
+margin-bottom:10px;
+border:1px solid #1e2a55;
+border-radius:6px;
+font-size:15px;
+outline:none;
+background:#0b0f2a;
+color:white;
+}
+
+/* FOCUS */
+input:focus,select:focus{
+border-color:#00c6ff;
+box-shadow:0 0 5px #00c6ff;
+}
+
+/* ERROR */
+.error{
+color:#ff4d4d;
+font-size:12px;
+margin-bottom:8px;
+display:none;
+}
+
+.input-error{
+border-color:#ff4d4d;
+}
+
+/* PASSWORD */
+.password-box{
+position:relative;
+}
+
+.password-box span{
+position:absolute;
+right:12px;
+top:12px;
+cursor:pointer;
+color:#00c6ff;
+}
+
+/* BUTTON */
+button{
+width:100%;
+padding:13px;
+margin-top:10px;
+background:linear-gradient(90deg,#00c6ff,#0072ff);
+border:none;
+color:white;
+font-weight:bold;
+border-radius:6px;
+cursor:pointer;
+font-size:15px;
+}
+
+button:hover{
+opacity:.9;
+}
+
+/* SUCCESS */
+.success{
+text-align:center;
+color:#00ff99;
+margin-top:10px;
+}
+
+/* LOGIN */
+.login{
+text-align:center;
+margin-top:12px;
+font-size:14px;
+color:#ccc;
+}
+
+.login a{
+color:#00c6ff;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+<img src="images/logo2.webp">
+</div>
+
+<h2>Create Secure Account</h2>
+
+<form id="registerForm">
+
+<label>Full Name</label>
+<input type="text" id="name">
+<div class="error" id="nameError">Only alphabets allowed</div>
+
+<label>Email Address</label>
+<input type="email" id="email">
+<div class="error" id="emailError">Enter valid email</div>
+
+<label>Phone Number</label>
+<input type="text" id="phone">
+<div class="error" id="phoneError">Phone must be 10 digits</div>
+
+<label>Role</label>
+<select id="role">
+<option value="">Select Role</option>
+<option value="admin">Admin</option>
+<option value="user">User</option>
+
+</select>
+<div class="error" id="roleError">Please select role</div>
+
+<label>Password</label>
+
+<div class="password-box">
+<input type="password" id="password">
+<span onclick="togglePassword('password')">👁</span>
+</div>
+<div class="error" id="passwordError">Password required</div>
+
+<label>Confirm Password</label>
+
+<div class="password-box">
+<input type="password" id="confirmPassword">
+<span onclick="togglePassword('confirmPassword')">👁</span>
+</div>
+<div class="error" id="confirmPasswordError">Passwords do not match</div>
+
+<button>Create Account</button>
+
+</form>
+
+<p class="success" id="successMsg"></p>
+
+<div class="login">
+Already have account? <a href="login.html">Login</a>
+</div>
+
+</div>
+
+<script>
+
+function togglePassword(id){
+let field=document.getElementById(id)
+field.type = field.type==="password" ? "text" : "password"
+}
+
+/* NAME VALIDATION */
+document.getElementById("name").addEventListener("input",function(){
+this.value=this.value.replace(/[^a-zA-Z ]/g,'')
+})
+
+/* PHONE VALIDATION */
+document.getElementById("phone").addEventListener("input",function(){
+this.value=this.value.replace(/[^0-9]/g,'')
+if(this.value.length>10){
+this.value=this.value.slice(0,10)
+}
+})
+
+document.getElementById("registerForm").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let valid=true
+
+let name=document.getElementById("name")
+let email=document.getElementById("email")
+let phone=document.getElementById("phone")
+let role=document.getElementById("role")
+let password=document.getElementById("password")
+let confirmPassword=document.getElementById("confirmPassword")
+
+let emailPattern=/^[^ ]+@[^ ]+\.[a-z]{2,3}$/
+
+/* RESET */
+document.querySelectorAll(".error").forEach(e=>e.style.display="none")
+document.querySelectorAll("input,select").forEach(e=>e.classList.remove("input-error"))
+
+/* VALIDATIONS */
+if(name.value.trim()===""){
+name.classList.add("input-error")
+document.getElementById("nameError").style.display="block"
+valid=false
+}
+
+if(!email.value.match(emailPattern)){
+email.classList.add("input-error")
+document.getElementById("emailError").style.display="block"
+valid=false
+}
+
+if(phone.value.length!==10){
+phone.classList.add("input-error")
+document.getElementById("phoneError").style.display="block"
+valid=false
+}
+
+if(role.value===""){
+role.classList.add("input-error")
+document.getElementById("roleError").style.display="block"
+valid=false
+}
+
+if(password.value===""){
+password.classList.add("input-error")
+document.getElementById("passwordError").style.display="block"
+valid=false
+}
+
+if(password.value!==confirmPassword.value){
+confirmPassword.classList.add("input-error")
+document.getElementById("confirmPasswordError").style.display="block"
+valid=false
+}
+
+if(!valid) return
+
+/* SAVE USER */
+let user={
+name:name.value,
+email:email.value,
+phone:phone.value,
+role:role.value,
+password:password.value
+}
+
+localStorage.setItem("stacklyUser",JSON.stringify(user))
+
+document.getElementById("successMsg").innerText="Account created successfully"
+
+/* REDIRECT */
+setTimeout(()=>{
+window.location.href="login.html"
+},2000)
+
+})
+
+</script>
+
+</body>
+</html>

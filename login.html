@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stackly Security | Login</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI, sans-serif;
+}
+
+body{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#0b0f2a;
+padding:20px;
+}
+
+/* CONTAINER */
+.container{
+background:#111633;
+width:100%;
+max-width:420px;
+padding:35px;
+border-radius:14px;
+box-shadow:0 0 25px rgba(0, 140, 255, 0.3);
+color:white;
+}
+
+/* LOGO */
+.logo{
+text-align:center;
+margin-bottom:15px;
+}
+
+.logo img{
+width:110px;
+}
+
+/* TITLE */
+h2{
+text-align:center;
+margin-bottom:25px;
+color:#00c6ff;
+}
+
+/* LABEL */
+label{
+font-weight:600;
+font-size:14px;
+display:block;
+margin-bottom:6px;
+color:#ccc;
+}
+
+/* INPUT */
+input,select{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #1e2a55;
+border-radius:6px;
+font-size:15px;
+outline:none;
+background:#0b0f2a;
+color:white;
+}
+
+/* FOCUS */
+input:focus,select:focus{
+border-color:#00c6ff;
+box-shadow:0 0 5px #00c6ff;
+}
+
+/* PASSWORD */
+.password-box{
+position:relative;
+}
+
+.password-box span{
+position:absolute;
+right:12px;
+top:12px;
+cursor:pointer;
+color:#00c6ff;
+}
+
+/* BUTTON */
+button{
+width:100%;
+padding:13px;
+background:linear-gradient(90deg,#00c6ff,#0072ff);
+border:none;
+color:white;
+font-weight:bold;
+border-radius:6px;
+cursor:pointer;
+font-size:15px;
+}
+
+button:hover{
+opacity:.9;
+}
+
+/* BACK BUTTON */
+.back-btn{
+background:#222;
+color:#aaa;
+}
+
+.back-btn:hover{
+background:#333;
+}
+
+/* BUTTON GROUP */
+.btn-group{
+display:flex;
+gap:10px;
+}
+
+/* FORGOT */
+.forgot{
+text-align:right;
+margin-top:-10px;
+margin-bottom:15px;
+}
+
+.forgot a{
+font-size:13px;
+color:#00c6ff;
+text-decoration:none;
+}
+
+.forgot a:hover{
+text-decoration:underline;
+}
+
+/* REGISTER */
+.register{
+text-align:center;
+margin-top:12px;
+font-size:14px;
+color:#ccc;
+}
+
+.register a{
+color:#00c6ff;
+}
+
+/* MOBILE */
+@media (max-width:480px){
+.container{
+padding:25px;
+}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+<img src="images/logo2.webp" alt="Stackly Logo">
+</div>
+
+<h2>Secure Login</h2>
+
+<form id="loginForm">
+
+<label>Login As</label>
+
+<select id="role" required>
+<option value="">Select Role</option>
+<option value="admin">Admin</option>
+<option value="user">User</option>
+
+</select>
+
+<label>Email Address</label>
+<input type="email" id="email" placeholder="Enter email" required>
+
+<label>Password</label>
+
+<div class="password-box">
+<input type="password" id="password" required>
+<span onclick="togglePassword()">👁</span>
+</div>
+
+<div class="forgot">
+<a href="404.html">Forgot Password?</a>
+</div>
+
+<div class="btn-group">
+<button type="button" class="back-btn" onclick="goBack()">Back</button>
+<button type="submit">Login</button>
+</div>
+
+</form>
+
+<div class="register">
+Don't have account? <a href="register.html">Register</a>
+</div>
+
+</div>
+
+<script>
+
+/* BACK */
+function goBack(){
+window.location.href="index.html"
+}
+
+/* PASSWORD TOGGLE */
+function togglePassword(){
+let field=document.getElementById("password")
+field.type = field.type === "password" ? "text" : "password"
+}
+
+/* LOGIN */
+document.getElementById("loginForm").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let email=document.getElementById("email").value
+let password=document.getElementById("password").value
+let role=document.getElementById("role").value
+
+let user=JSON.parse(localStorage.getItem("stacklyUser"))
+
+if(user && email===user.email && password===user.password && role===user.role){
+
+localStorage.setItem("loggedEmail",email)
+
+/* ROLE BASED REDIRECT */
+if(role==="admin"){
+window.location.href="admin-dashboard.html"
+}
+else if(role==="user"){
+window.location.href="user-dashboard.html"
+}
+
+
+}else{
+alert("Invalid login credentials")
+}
+
+})
+
+</script>
+
+</body>
+</html>

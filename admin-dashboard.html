@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stackly Cybersecurity Admin Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI;
+}
+
+body{
+display:flex;
+background:#0b0f2a;
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+/* SIDEBAR */
+.sidebar{
+width:240px;
+background:#111633;
+padding:25px;
+position:fixed;
+height:100%;
+left:0;
+transition:0.3s;
+z-index:1000;
+}
+
+.sidebar h2{
+margin-bottom:30px;
+color:#00c6ff;
+}
+
+.sidebar a{
+display:block;
+color:#ccc;
+margin:12px 0;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.sidebar a:hover{
+background:#00c6ff;
+color:black;
+}
+
+/* CLOSE BUTTON */
+.close-btn{
+display:none;
+font-size:22px;
+margin-bottom:15px;
+cursor:pointer;
+color:#00c6ff;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+
+.sidebar{
+left:-240px;
+}
+
+.sidebar.active{
+left:0;
+}
+
+.close-btn{
+display:block;
+}
+
+}
+
+/* MAIN */
+.main{
+margin-left:240px;
+width:100%;
+min-height:100vh;
+overflow-y:auto;
+}
+
+@media(max-width:900px){
+.main{
+margin-left:0;
+}
+}
+
+/* TOPBAR */
+.topbar{
+background:#111633;
+padding:15px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #1e2a55;
+flex-wrap:wrap;
+}
+
+.hamburger{
+display:none;
+font-size:22px;
+cursor:pointer;
+}
+
+@media(max-width:900px){
+.hamburger{
+display:block;
+}
+}
+
+.email{
+color:#00c6ff;
+}
+
+.exit{
+background:#ff4d4d;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+
+/* CARDS */
+.cards{
+padding:25px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.card{
+background:#111633;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,198,255,0.2);
+}
+
+/* CHARTS */
+.charts{
+padding:20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:20px;
+}
+
+.chart-box{
+background:#111633;
+padding:20px;
+border-radius:10px;
+}
+
+/* TABLE */
+.table-section{
+padding:25px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#111633;
+border-radius:10px;
+overflow:hidden;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #1e2a55;
+}
+
+th{
+background:#1a2145;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+
+<div class="close-btn" onclick="closeSidebar()">✖</div>
+
+<h2>Stackly CyberSec</h2>
+
+<a onclick="loadDashboard()">Dashboard</a>
+<a onclick="loadThreats()">Threat Monitoring</a>
+<a onclick="loadLogs()">Security Logs</a>
+<a onclick="loadUsers()">User Security</a>
+<a onclick="loadAnalytics()">Analytics</a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="topbar">
+
+<div style="display:flex;align-items:center;gap:15px;">
+<div class="hamburger" onclick="toggleSidebar()">☰</div>
+<h3 id="pageTitle">Admin Dashboard</h3>
+</div>
+
+<div style="display:flex;align-items:center;gap:15px;">
+<span class="email" id="userEmail"></span>
+<button class="exit" onclick="exitDashboard()">Exit</button>
+</div>
+
+</div>
+
+<div id="content"></div>
+
+</div>
+
+<script>
+
+/* EMAIL */
+document.getElementById("userEmail").innerText =
+localStorage.getItem("loggedEmail")
+
+function exitDashboard(){
+window.location.href="index.html"
+}
+
+/* SIDEBAR */
+function toggleSidebar(){
+document.getElementById("sidebar").classList.add("active")
+}
+
+function closeSidebar(){
+document.getElementById("sidebar").classList.remove("active")
+}
+
+/* ================= DASHBOARD ================= */
+function loadDashboard(){
+
+document.getElementById("pageTitle").innerText="Admin Cybersecurity Dashboard"
+
+document.getElementById("content").innerHTML=`
+
+<div class="cards">
+
+<div class="card"><h3>Total Threats</h3><p>245</p></div>
+<div class="card"><h3>Blocked Attacks</h3><p>1240</p></div>
+<div class="card"><h3>Active Alerts</h3><p>32</p></div>
+<div class="card"><h3>System Health</h3><p>98%</p></div>
+
+<div class="card"><h3>Firewall Status</h3><p>Active</p></div>
+<div class="card"><h3>Intrusion Attempts</h3><p>89</p></div>
+<div class="card"><h3>Malware Detected</h3><p>17</p></div>
+<div class="card"><h3>Data Breaches</h3><p>2</p></div>
+
+</div>
+
+<div class="charts">
+<div class="chart-box"><canvas id="c1"></canvas></div>
+<div class="chart-box"><canvas id="c2"></canvas></div>
+<div class="chart-box"><canvas id="c3"></canvas></div>
+</div>
+
+<div class="table-section">
+<h3>Recent Security Events</h3>
+<table>
+<tr><th>Event</th><th>Status</th><th>Time</th></tr>
+<tr><td>Firewall Block</td><td>Success</td><td>10:20 AM</td></tr>
+<tr><td>Login Attempt</td><td>Failed</td><td>11:00 AM</td></tr>
+<tr><td>Malware Scan</td><td>Completed</td><td>11:30 AM</td></tr>
+<tr><td>IP Blocked</td><td>Active</td><td>12:10 PM</td></tr>
+</table>
+</div>
+`
+
+new Chart(c1,{type:"bar",data:{labels:["Mon","Tue","Wed"],datasets:[{data:[50,80,120],backgroundColor:"#00c6ff"}]}})
+new Chart(c2,{type:"line",data:{labels:["1AM","5AM","9AM"],datasets:[{data:[200,400,300],borderColor:"#00ffcc"}]}})
+new Chart(c3,{type:"pie",data:{labels:["Low","Medium","High"],datasets:[{data:[40,35,25]}]}})
+
+}
+
+/* ================= THREATS ================= */
+function loadThreats(){
+
+document.getElementById("pageTitle").innerText="Threat Monitoring"
+
+document.getElementById("content").innerHTML=`
+
+<div class="charts">
+<div class="chart-box"><canvas id="c4"></canvas></div>
+<div class="chart-box"><canvas id="c5"></canvas></div>
+</div>
+
+<div class="table-section">
+<h3>Live Cyber Threats</h3>
+<table>
+<tr><th>IP</th><th>Threat</th><th>Status</th></tr>
+<tr><td>192.168.1.1</td><td>DDoS</td><td>Blocked</td></tr>
+<tr><td>10.0.0.2</td><td>Malware</td><td>Active</td></tr>
+</table>
+</div>
+`
+
+new Chart(c4,{type:"line",data:{labels:["Jan","Feb"],datasets:[{data:[20,40],borderColor:"#ff4d4d"}]}})
+new Chart(c5,{type:"doughnut",data:{labels:["DDoS","Malware"],datasets:[{data:[60,40]}]}})
+
+}
+
+/* ================= LOGS ================= */
+function loadLogs(){
+
+document.getElementById("pageTitle").innerText="Security Logs"
+
+document.getElementById("content").innerHTML=`
+
+<div class="table-section">
+<h3>System Logs</h3>
+<table>
+<tr><th>User</th><th>Action</th></tr>
+<tr><td>Admin</td><td>Login</td></tr>
+<tr><td>User</td><td>Failed Login</td></tr>
+</table>
+</div>
+
+<div class="charts">
+<div class="chart-box"><canvas id="c6"></canvas></div>
+</div>
+`
+
+new Chart(c6,{type:"bar",data:{labels:["Login","Failed"],datasets:[{data:[120,40]}]}})
+
+}
+
+/* ================= USERS ================= */
+function loadUsers(){
+
+document.getElementById("pageTitle").innerText="User Security"
+
+document.getElementById("content").innerHTML=`
+
+<div class="cards">
+<div class="card"><h3>Active Users</h3><p>120</p></div>
+<div class="card"><h3>Blocked Users</h3><p>5</p></div>
+</div>
+
+<div class="charts">
+<div class="chart-box"><canvas id="c7"></canvas></div>
+</div>
+`
+
+new Chart(c7,{type:"pie",data:{labels:["Safe","Risk"],datasets:[{data:[80,20]}]}})
+
+}
+
+/* ================= ANALYTICS ================= */
+function loadAnalytics(){
+
+document.getElementById("pageTitle").innerText="Cyber Analytics"
+
+document.getElementById("content").innerHTML=`
+
+<div class="cards">
+<div class="card"><h3>Risk Level</h3><p>Medium</p></div>
+<div class="card"><h3>Security Score</h3><p>87%</p></div>
+</div>
+
+<div class="charts">
+<div class="chart-box"><canvas id="c8"></canvas></div>
+</div>
+`
+
+new Chart(c8,{type:"doughnut",data:{labels:["Safe","Threat"],datasets:[{data:[70,30]}]}})
+
+}
+
+/* DEFAULT LOAD */
+loadDashboard()
+
+</script>
+
+</body>
+</html>

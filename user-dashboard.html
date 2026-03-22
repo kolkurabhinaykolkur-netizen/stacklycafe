@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>User Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* RESET */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI;
+}
+
+
+
+body{
+display:flex;
+background:#0b0f2a;
+color:white;
+min-height:100vh;
+overflow-x:hidden; /* 🔥 IMPORTANT */
+}
+
+
+.sidebar{
+width:240px;
+background:#111633;
+padding:25px;
+position:fixed;
+height:100%;
+left:0;
+top:0; /* ✅ ADD THIS */
+transition:0.3s;
+z-index:1000;
+}
+.sidebar h2{
+color:#00c6ff;
+margin-bottom:30px;
+}
+
+.sidebar a{
+display:block;
+padding:10px;
+margin:10px 0;
+color:#ccc;
+border-radius:6px;
+cursor:pointer;
+}
+
+.sidebar a:hover{
+background:#00c6ff;
+color:black;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+.sidebar{ left:-240px; }
+.sidebar.active{ left:0; }
+}
+
+
+.main{
+margin-left:240px;
+width:calc(100% - 240px); /* 🔥 FIX ALIGNMENT */
+min-height:100vh;
+transition:0.3s;
+}
+
+@media(max-width:900px){
+.main{ margin-left:0; }
+}
+
+
+@media(max-width:900px){
+.main{
+margin-left:0;
+width:100%; /* 🔥 FIX */
+}
+}
+
+
+.topbar{
+background:#111633;
+padding:15px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:nowrap; /* 🔥 PREVENT BREAK */
+border-bottom:1px solid #1e2a55;
+}
+
+.hamburger{
+display:none;
+font-size:22px;
+cursor:pointer;
+}
+
+@media(max-width:900px){
+.hamburger{ display:block; }
+}
+
+.email{ color:#00c6ff; }
+
+.exit{
+background:#ff4d4d;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+
+/* GRID */
+.section-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:20px;
+}
+
+/* CARD */
+.card{
+background:#111633;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,198,255,0.2);
+}
+
+/* CHART */
+.chart-box{
+background:#111633;
+padding:20px;
+border-radius:10px;
+height:260px;
+}
+
+.chart-box canvas{
+height:200px !important;
+}
+
+/* TABLE */
+.table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+.table th,.table td{
+padding:10px;
+border-bottom:1px solid #1e2a55;
+}
+
+
+
+
+
+
+
+.close-btn{
+display:none;
+font-size:22px;
+margin-bottom:15px;
+cursor:pointer;
+color:#00c6ff;
+}
+
+/* FIX MOBILE SIDEBAR + NO SHIFT */
+@media(max-width:900px){
+
+.sidebar{
+left:-240px;
+}
+
+.sidebar.active{
+left:0;
+}
+
+.close-btn{
+display:block;
+}
+
+/* 🔥 IMPORTANT: prevent shaking / shifting */
+body{
+overflow-x:hidden;
+}
+}
+
+.main{
+margin-left:240px;
+width:100%;
+min-height:100vh;
+transition:0.3s; /* smooth */
+}
+
+@media(max-width:900px){
+.main{
+margin-left:0;
+}
+}
+
+
+
+
+
+/* 🔥 FIX MOBILE TOPBAR ALIGNMENT */
+@media(max-width:900px){
+
+.topbar{
+padding:10px;
+}
+
+.topbar h3{
+font-size:14px;
+}
+
+.email{
+font-size:12px;
+max-width:120px;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+.exit{
+padding:6px 10px;
+font-size:12px;
+}
+
+}
+
+
+
+
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="closeSidebar()">✖</div>
+<h2>User Panel</h2>
+<a onclick="loadDashboard();closeSidebar()">Dashboard</a>
+<a onclick="loadActivity();closeSidebar()">My Activity</a>
+<a onclick="loadProfile();closeSidebar()">Profile</a>
+<a onclick="loadReports();closeSidebar()">Reports</a>
+<a onclick="loadSettings();closeSidebar()">Settings</a>
+</div>
+
+<div class="main">
+
+<div class="topbar">
+<div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+<div class="hamburger" onclick="toggleSidebar()">☰</div>
+<h3 id="pageTitle">User Dashboard</h3>
+</div>
+
+<div style="display:flex;gap:15px;">
+<span class="email" id="userEmail"></span>
+<button class="exit" onclick="exitDashboard()">Logout</button>
+</div>
+</div>
+
+<div id="content"></div>
+
+</div>
+
+<script>
+
+userEmail.innerText = localStorage.getItem("loggedEmail")
+
+function toggleSidebar(){
+document.getElementById("sidebar").classList.add("active")
+}
+
+function closeSidebar(){
+document.getElementById("sidebar").classList.remove("active")
+}
+
+function exitDashboard(){
+window.location.href="index.html"
+}
+
+/* DASHBOARD */
+function loadDashboard(){
+
+pageTitle.innerText="User Dashboard"
+
+content.innerHTML=`
+
+<div class="section-grid">
+
+<div class="card"><h3>Total Logins</h3><p>58</p></div>
+<div class="card"><h3>Tasks</h3><p>124</p></div>
+<div class="card"><h3>Performance</h3><p>92%</p></div>
+<div class="card"><h3>Messages</h3><p>18</p></div>
+
+<div class="chart-box"><canvas id="c1"></canvas></div>
+<div class="chart-box"><canvas id="c2"></canvas></div>
+<div class="chart-box"><canvas id="c3"></canvas></div>
+<div class="chart-box"><canvas id="c4"></canvas></div>
+
+<div class="card"><h3>Projects</h3><p>12 Active</p></div>
+<div class="card"><h3>Notifications</h3><p>5 New</p></div>
+
+<div class="chart-box"><canvas id="c11"></canvas></div>
+<div class="chart-box"><canvas id="c12"></canvas></div>
+
+</div>
+
+<div style="padding:20px;">
+<h3>Recent Activity</h3>
+<table class="table">
+<tr><th>Action</th><th>Status</th><th>Time</th></tr>
+<tr><td>Login</td><td>Success</td><td>9:00 AM</td></tr>
+<tr><td>Upload</td><td>Completed</td><td>10:30 AM</td></tr>
+<tr><td>Update</td><td>Success</td><td>12:00 PM</td></tr>
+<tr><td>Logout</td><td>Done</td><td>1:00 PM</td></tr>
+</table>
+</div>
+`
+
+new Chart(c1,{type:"bar",data:{labels:["Mon","Tue","Wed"],datasets:[{data:[5,10,8],backgroundColor:"#00c6ff"}]}})
+new Chart(c2,{type:"line",data:{labels:["W1","W2"],datasets:[{data:[20,35],borderColor:"#00ffcc"}]}})
+new Chart(c3,{type:"doughnut",data:{labels:["Done","Pending"],datasets:[{data:[70,30]}]}})
+new Chart(c4,{type:"pie",data:{labels:["A","B","C"],datasets:[{data:[40,30,30]}]}})
+new Chart(c11,{type:"bar",data:{labels:["P1","P2"],datasets:[{data:[30,50],backgroundColor:"#00c6ff"}]}})
+new Chart(c12,{type:"line",data:{labels:["Jan","Feb"],datasets:[{data:[15,25],borderColor:"#00ffcc"}]}})
+
+}
+
+/* ACTIVITY */
+function loadActivity(){
+
+pageTitle.innerText="My Activity"
+
+content.innerHTML=`
+
+<div class="section-grid">
+
+<div class="card"><h3>Completed</h3><p>80</p></div>
+<div class="card"><h3>Pending</h3><p>20</p></div>
+
+<div class="chart-box"><canvas id="c5"></canvas></div>
+<div class="chart-box"><canvas id="c6"></canvas></div>
+
+<div class="card"><h3>Hours</h3><p>6 hrs</p></div>
+<div class="card"><h3>Efficiency</h3><p>88%</p></div>
+
+<div class="chart-box"><canvas id="c13"></canvas></div>
+<div class="chart-box"><canvas id="c14"></canvas></div>
+
+</div>
+
+<div style="padding:20px;">
+<h3>Activity Logs</h3>
+<table class="table">
+<tr><th>Task</th><th>Status</th></tr>
+<tr><td>Task 1</td><td>Done</td></tr>
+<tr><td>Task 2</td><td>Pending</td></tr>
+<tr><td>Task 3</td><td>Done</td></tr>
+</table>
+</div>
+`
+
+new Chart(c5,{type:"doughnut",data:{labels:["Completed","Pending"],datasets:[{data:[80,20]}]}})
+new Chart(c6,{type:"bar",data:{labels:["Mon","Tue"],datasets:[{data:[10,15],backgroundColor:"#00c6ff"}]}})
+new Chart(c13,{type:"line",data:{labels:["D1","D2"],datasets:[{data:[5,8],borderColor:"#00ffcc"}]}})
+new Chart(c14,{type:"pie",data:{labels:["Work","Break"],datasets:[{data:[70,30]}]}})
+
+}
+
+/* KEEP OTHER FUNCTIONS SAME */
+loadDashboard()
+
+
+
+function loadProfile(){
+
+pageTitle.innerText="Profile"
+
+content.innerHTML=`
+
+<div class="section-grid">
+
+<div class="card">
+<h3>Name</h3>
+<p>Abhinay</p>
+</div>
+
+<div class="card">
+<h3>Email</h3>
+<p>${localStorage.getItem("loggedEmail")}</p>
+</div>
+
+<div class="card">
+<h3>Role</h3>
+<p>User</p>
+</div>
+
+<div class="card">
+<h3>Account Status</h3>
+<p>Active</p>
+</div>
+
+<div class="chart-box"><canvas id="p1"></canvas></div>
+<div class="chart-box"><canvas id="p2"></canvas></div>
+
+</div>
+
+<div style="padding:20px;">
+<h3>Profile Activity</h3>
+<table class="table">
+<tr><th>Action</th><th>Date</th></tr>
+<tr><td>Password Changed</td><td>10 Mar</td></tr>
+<tr><td>Email Updated</td><td>15 Mar</td></tr>
+<tr><td>Login</td><td>Today</td></tr>
+</table>
+</div>
+`
+
+new Chart(p1,{
+type:"pie",
+data:{
+labels:["Active","Inactive"],
+datasets:[{data:[90,10]}]
+}
+})
+
+new Chart(p2,{
+type:"bar",
+data:{
+labels:["Jan","Feb","Mar"],
+datasets:[{data:[5,8,12],backgroundColor:"#00c6ff"}]
+}
+})
+
+}
+
+
+
+function loadReports(){
+
+pageTitle.innerText="Reports"
+
+content.innerHTML=`
+
+<div class="section-grid">
+
+<div class="card"><h3>Monthly Report</h3><p>Generated</p></div>
+<div class="card"><h3>Weekly Report</h3><p>Pending</p></div>
+<div class="card"><h3>Daily Report</h3><p>Completed</p></div>
+<div class="card"><h3>Downloads</h3><p>24 Files</p></div>
+
+<div class="chart-box"><canvas id="r1"></canvas></div>
+<div class="chart-box"><canvas id="r2"></canvas></div>
+<div class="chart-box"><canvas id="r3"></canvas></div>
+<div class="chart-box"><canvas id="r4"></canvas></div>
+
+</div>
+
+<div style="padding:20px;">
+<h3>Reports History</h3>
+<table class="table">
+<tr><th>Report</th><th>Status</th><th>Date</th></tr>
+<tr><td>March Report</td><td>Generated</td><td>20 Mar</td></tr>
+<tr><td>Weekly</td><td>Pending</td><td>22 Mar</td></tr>
+<tr><td>Daily</td><td>Done</td><td>Today</td></tr>
+</table>
+</div>
+`
+
+new Chart(r1,{
+type:"line",
+data:{
+labels:["Jan","Feb","Mar"],
+datasets:[{data:[30,50,40],borderColor:"#00ffcc"}]
+}
+})
+
+new Chart(r2,{
+type:"bar",
+data:{
+labels:["Week1","Week2"],
+datasets:[{data:[20,40],backgroundColor:"#00c6ff"}]
+}
+})
+
+new Chart(r3,{
+type:"doughnut",
+data:{
+labels:["Completed","Pending"],
+datasets:[{data:[70,30]}]
+}
+})
+
+new Chart(r4,{
+type:"pie",
+data:{
+labels:["PDF","Excel","CSV"],
+datasets:[{data:[40,30,30]}]
+}
+})
+
+}
+
+
+
+
+
+
+
+
+
+
+function loadSettings(){
+
+pageTitle.innerText="Settings"
+
+content.innerHTML=`
+
+<div class="section-grid">
+
+<div class="card">
+<h3>Theme</h3>
+<p>Dark Mode</p>
+</div>
+
+<div class="card">
+<h3>Notifications</h3>
+<p>Enabled</p>
+</div>
+
+<div class="card">
+<h3>Privacy</h3>
+<p>High</p>
+</div>
+
+<div class="card">
+<h3>Language</h3>
+<p>English</p>
+</div>
+
+<div class="chart-box"><canvas id="s1"></canvas></div>
+<div class="chart-box"><canvas id="s2"></canvas></div>
+
+</div>
+
+<div style="padding:20px;">
+<h3>Settings Logs</h3>
+<table class="table">
+<tr><th>Setting</th><th>Status</th></tr>
+<tr><td>Theme Changed</td><td>Dark</td></tr>
+<tr><td>Notifications</td><td>Enabled</td></tr>
+<tr><td>Password Update</td><td>Success</td></tr>
+</table>
+</div>
+`
+
+new Chart(s1,{
+type:"doughnut",
+data:{
+labels:["Enabled","Disabled"],
+datasets:[{data:[75,25]}]
+}
+})
+
+new Chart(s2,{
+type:"bar",
+data:{
+labels:["Security","Privacy"],
+datasets:[{data:[80,90],backgroundColor:"#00c6ff"}]
+}
+})
+
+}
+
+</script>
+
+</body>
+</html>
