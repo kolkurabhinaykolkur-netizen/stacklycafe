@@ -3754,3 +3754,109 @@ button {
         width: 90px;
     }
 }
+
+
+
+
+
+
+
+
+
+
+/* ===== HEADER SIZE (DESKTOP + MOBILE SAME) ===== */
+.navbar {
+    height: 70px;
+    padding: 0;
+}
+
+.nav-container {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* LOGO (unchanged size) */
+.logo img {
+    height: 70px; /* keep your size */
+}
+
+/* NAV LINKS */
+.nav-links a {
+    padding: 8px 14px;
+    font-size: 15px;
+}
+
+/* LOGIN BUTTON */
+.login-btn a {
+    padding: 8px 18px;
+    font-size: 15px;
+}
+
+/* HAMBURGER ALIGN */
+.menu-icon {
+    font-size: 22px;
+    display: none;
+    align-items: center;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+    .navbar {
+        height: 70px;
+    }
+
+    .nav-container {
+        height: 70px;
+    }
+
+    /* Hide desktop menu */
+    .nav-links {
+        display: none;
+    }
+
+    .login-btn {
+        display: none;
+    }
+
+    /* Show hamburger */
+    .menu-icon {
+        display: flex;
+    }
+}
+
+
+
+
+
+.logo {
+    margin-left: 20px; /* adjust value as you want */
+}
+
+
+
+
+.login-btn {
+    margin-right: 20px; /* pushes it slightly left */
+}
+
+
+
+
+
+
+
+
+/* MOBILE ONLY */
+@media (max-width: 768px) {
+
+    .menu-icon {
+        display: flex;
+        font-size: 28px;   /* make it bigger */
+        margin-right: 20px; /* move it slightly left */
+        cursor: pointer;
+    }
+
+}
